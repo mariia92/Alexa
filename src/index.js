@@ -1,3 +1,4 @@
+
 var request = require("request")
 
 // Route the incoming request based on type (LaunchRequest, IntentRequest,
@@ -111,21 +112,44 @@ function handleGetInfoIntent(intent, session, callback) {
 
 }
 
-function url(){
-    return "https://en.wikipedia.org/w/api.php?action=query&format=json&list=search&utf8=1&srsearch=Albert+Einstein"
+function url() {
+    return "http://en.wikipedia.org/w/api.php?action=query&format=json&list=search&utf8=1&srsearch=Albert+Einstein"
+}
+
+function url2() {
+    return {
+        url: "https://api.nytimes.com/svc/books/v3/lists.json",
+        qs: {
+            "api-key" : "8430ae194d0a446a8b1b9b9d607b2acc",
+            "list" : "hardcover-fiction"
+        }
+    }
 }
 
 function getJSON(callback) {
-    request.get(url(), function(error, response, body) {
+    // HTTP - WIKPEDIA
+    // request.get(url(), function(error, response, body) {
+    //     var d = JSON.parse(body)
+    //     var result = d.query.searchinfo.totalhits
+    //     if (result > 0) {
+    //         callback(result);
+    //     } else {
+    //         callback("ERROR")
+    //     }
+    // })
+
+    // HTTPS with NYT
+    request.get(url2(), function(error, response, body) {
         var d = JSON.parse(body)
-        var result = d.query.searchInfo.totalHits
-        if (result > 0) {
-            callback(result);
+        var result = d.results
+        if (result.length > 0) {
+            callback(result[0].book_details[0].title)
         } else {
             callback("ERROR")
         }
     })
 }
+
 
 // ------- Helper functions to build responses for Alexa -------
 
